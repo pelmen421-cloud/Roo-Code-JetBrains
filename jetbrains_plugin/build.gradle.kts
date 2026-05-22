@@ -242,7 +242,7 @@ intellij {
 
     plugins.set(
         listOf(
-            "com.intellij.java",
+            //"com.intellij.java",
             // Add JCEF support
             "org.jetbrains.plugins.terminal"
         )
