@@ -1,0 +1,50 @@
+name: Build
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        java: [17]
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        lfs: true
+        submodules: 'recursive'
+
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Set up JDK ${{ matrix.java }}
+      uses: actions/setup-java@v3
+      with:
+        java-version: ${{ matrix.java }}
+        distribution: 'temurin'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x jetbrains_plugin/gradlew
+
+    - name: Setup environment
+      run: |
+        npm install -g pnpm
+        ./scripts/setup.sh
+
+    - name: Build plugin
+      run: ./scripts/build.sh
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: RooCode-${{ github.sha }}.zip
+        path: dist/*.zip
