@@ -45,13 +45,13 @@ jobs:
         npm install -g pnpm
         ./scripts/setup.sh
 
-    - name: Build IDEA plugin (clean, no Java dependency)
-      run: |
-        cd jetbrains_plugin
-        ./gradlew clean buildPlugin -x instrumentCode -x buildSearchableOptions
+    - name: Build plugin with build.sh
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: ./scripts/build.sh
 
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: RooCode.zip
-        path: jetbrains_plugin/build/distributions/*.zip
+        path: dist/*.zip
